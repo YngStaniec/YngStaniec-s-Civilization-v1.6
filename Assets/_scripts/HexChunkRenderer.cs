@@ -6,15 +6,50 @@ public class HexChunkRenderer : MonoBehaviour
 {
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
+    BorderRenderer borderRenderer;
 
     public void Build(HexChunk chunk)
     {
         vertices.Clear();
         triangles.Clear();
+        borderRenderer = new BorderRenderer(vertices, triangles);
 
         foreach (var tile in chunk.tiles)
         {
+            foreach (HexDirection dir in System.Enum.GetValues(typeof(HexDirection)))
+            {
+                HexTile neighbor = tile.GetNeighbor(dir);
+
+                if (neighbor == null) continue;
+
+                EdgeType edge = HexEdgeUtility.EvaluateEdge(tile, neighbor);
+                
+                if (edge != EdgeType.Flat)
+                {
+                    Debug.DrawLine(
+                        tile.coordinates.ToPosition(),
+                        neighbor.coordinates.ToPosition(),
+                        Color.yellow,
+                        100f
+                    );
+
+                    Debug.Log("edge detected");
+                }
+
+                if (edge == EdgeType.CliffDown)
+                {
+                    Debug.DrawLine(
+                        tile.coordinates.ToPosition(),
+                        neighbor.coordinates.ToPosition(),
+                        Color.red,
+                        100f
+                    );
+                    Debug.Log("redline generated");
+                }
+            }
+
             Triangulate(tile);
+            borderRenderer.Generate(tile);
         }
 
         Mesh mesh = new Mesh();

@@ -1,3 +1,4 @@
+using UnityEngine;
 public class HexTile
 {
     public HexCoordinates coordinates;
@@ -17,6 +18,12 @@ public class HexTile
     public HexTile(HexCoordinates coordinates)
     {
         this.coordinates = coordinates;
+    }
+    public Vector3 ToPosition()
+    {
+        Vector3 pos = coordinates.ToPosition();
+        pos.y = height;
+        return pos;
     }
 
     public void SetNeighbor(HexDirection direction, HexTile neighbor)

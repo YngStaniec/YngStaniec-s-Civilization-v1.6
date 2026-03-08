@@ -1,17 +1,30 @@
 public static class HexDirectionExtensions
 {
-    public static readonly HexCoordinates[] Offsets =
+    public static HexCoordinates ToOffset(this HexDirection direction, int r)
     {
-        new HexCoordinates(1,-1), // NE
-        new HexCoordinates(1,0),  // E
-        new HexCoordinates(0,1),  // SE
-        new HexCoordinates(-1,1), // SW
-        new HexCoordinates(-1,0), // W
-        new HexCoordinates(0,-1)  // NW
-    };
+        bool odd = (r & 1) == 1;
 
-    public static HexCoordinates ToOffset(this HexDirection direction)
-    {
-        return Offsets[(int)direction];
+        switch (direction)
+        {
+            case HexDirection.NE:
+                return odd ? new HexCoordinates(1, -1) : new HexCoordinates(0, -1);
+
+            case HexDirection.E:
+                return new HexCoordinates(1, 0);
+
+            case HexDirection.SE:
+                return odd ? new HexCoordinates(1, 1) : new HexCoordinates(0, 1);
+
+            case HexDirection.SW:
+                return odd ? new HexCoordinates(0, 1) : new HexCoordinates(-1, 1);
+
+            case HexDirection.W:
+                return new HexCoordinates(-1, 0);
+
+            case HexDirection.NW:
+                return odd ? new HexCoordinates(0, -1) : new HexCoordinates(-1, -1);
+        }
+
+        return new HexCoordinates(0, 0);
     }
 }

@@ -3,6 +3,9 @@ using UnityEngine;
 public class WorldGenerator
 {
     public float heightScale = 2f;
+    [SerializeField] float noiseScale = 0.07f;
+    [SerializeField] float heightMultiplier = 2f;
+    [SerializeField] int seed = 12345;
     public World Generate(int width, int height)
     {
         World world = new World(width, height);
@@ -13,7 +16,7 @@ public class WorldGenerator
             {
                 HexCoordinates coords = new HexCoordinates(q, r);
                 HexTile tile = new HexTile(coords);
-                tile.height = Random.Range(0f, heightScale);
+                tile.height = GenerateHeight(coords.q, coords.r);
 
                 world.AddTile(tile);
             }
@@ -25,14 +28,25 @@ public class WorldGenerator
 
         return world;
     }
+    float GenerateHeight(int q, int r)
+    {
+        float x = (q + seed) * noiseScale;
+        float z = (r + seed) * noiseScale;
+
+        float noise = Mathf.PerlinNoise(x, z);
+
+        return noise * heightMultiplier;
+    }
     void BuildNeighbors(World world)
     {
         foreach (HexTile tile in world.tiles.Values)
         {
             foreach (HexDirection direction in System.Enum.GetValues(typeof(HexDirection)))
             {
+                HexCoordinates offset = direction.ToOffset(tile.coordinates.r);
+
                 HexCoordinates neighborCoords =
-                    tile.coordinates + direction.ToOffset();
+                    tile.coordinates + offset;
 
                 HexTile neighbor = world.GetTile(neighborCoords);
 
@@ -40,8 +54,14 @@ public class WorldGenerator
                 {
                     tile.SetNeighbor(direction, neighbor);
                 }
+                if (tile.coordinates.q == world.width - 1 && direction == HexDirection.E)
+                {
+                    Debug.Log("Wrap test: " + tile.coordinates + " -> " + neighbor.coordinates);
+                }
             }
+
         }
+
     }
     void BuildChunks(World world, int width, int height)
     {
