@@ -7,10 +7,18 @@ public static class HexWallGenerator
         float heightA,
         Vector3 hexBpos,
         float heightB,
-        int direction)
+        int direction) // direction już nie jest używany
     {
-        Vector3 corner1 = hexApos + HexMetrics.corners[1];
-        Vector3 corner2 = hexApos + HexMetrics.corners[2];
+        Vector3 center = (hexApos + hexBpos) * 0.5f;
+
+        Vector3 dir = (hexBpos - hexApos).normalized;
+
+        Vector3 edgeDir = Vector3.Cross(dir, Vector3.up).normalized;
+
+        float halfEdge = HexMetrics.radius * 0.5f;
+
+        Vector3 corner1 = center + edgeDir * halfEdge;
+        Vector3 corner2 = center - edgeDir * halfEdge;
 
         float lower = Mathf.Min(heightA, heightB);
         float higher = Mathf.Max(heightA, heightB);
@@ -26,6 +34,9 @@ public static class HexWallGenerator
         MeshFilter mf = wall.AddComponent<MeshFilter>();
         MeshRenderer mr = wall.AddComponent<MeshRenderer>();
 
+        mr.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        mr.material.color = new Color(0.4f,0.25f,0.1f);
+
         Mesh mesh = new Mesh();
 
         mesh.vertices = new Vector3[]
@@ -38,7 +49,7 @@ public static class HexWallGenerator
 
         int[] triangles;
 
-        if (heightA < heightB)
+        if(heightA < heightB)
         {
             triangles = new int[]
             {

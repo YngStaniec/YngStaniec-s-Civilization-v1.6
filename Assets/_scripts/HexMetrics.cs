@@ -1,11 +1,10 @@
 using UnityEngine;
 
-
 public static class HexMetrics
 {
     public const float radius = 1f;
     public const float hexWidth = 1.7320508f;
-    
+
     public static readonly Vector3[] corners =
     {
         new Vector3(0,0, radius),
@@ -16,16 +15,15 @@ public static class HexMetrics
         new Vector3(-0.8660254f,0,0.5f)
     };
 
-    static Vector3 Corner(int i)
+    public static readonly Vector3[] neighborOffsets =
     {
-        float angle = Mathf.Deg2Rad * (60f * i + 30f);
-
-        return new Vector3(
-            radius * Mathf.Cos(angle),
-            0,
-            radius * Mathf.Sin(angle)
-        );
-    }
+        new Vector3(hexWidth,0,0),
+        new Vector3(hexWidth*0.5f,0,radius*1.5f),
+        new Vector3(-hexWidth*0.5f,0,radius*1.5f),
+        new Vector3(-hexWidth,0,0),
+        new Vector3(-hexWidth*0.5f,0,-radius*1.5f),
+        new Vector3(hexWidth*0.5f,0,-radius*1.5f)
+    };
 
     public static Vector3 GetFirstCorner(int direction)
     {
@@ -34,6 +32,28 @@ public static class HexMetrics
 
     public static Vector3 GetSecondCorner(int direction)
     {
-        return corners[direction + 1];
+        return corners[(direction + 1) % 6];
+    }
+
+    public static int GetDirection(Vector3 from, Vector3 to)
+    {
+        Vector3 dir = (to - from).normalized;
+
+        float bestDot = -999f;
+        int bestIndex = 0;
+
+        for(int i=0;i<6;i++)
+        {
+            Vector3 n = neighborOffsets[i].normalized;
+            float dot = Vector3.Dot(dir, n);
+
+            if(dot > bestDot)
+            {
+                bestDot = dot;
+                bestIndex = i;
+            }
+        }
+
+        return bestIndex;
     }
 }
