@@ -15,6 +15,11 @@ public class WorldRenderer : MonoBehaviour
     {
         grid = new Grid(width, height);
 
+        if (width % chunkSize != 0 || height % chunkSize != 0)
+        {
+            Debug.LogError("Grid size must be divisible by chunkSize!");
+        }
+
         CreateChunks();
     }
 
@@ -36,6 +41,8 @@ public class WorldRenderer : MonoBehaviour
         GameObject chunkObject = new GameObject($"Chunk_{cx}_{cz}");
 
         chunkObject.transform.parent = transform;
+        chunkObject.transform.localPosition = Vector3.zero;
+
 
         MeshFilter filter = chunkObject.AddComponent<MeshFilter>();
         MeshRenderer renderer = chunkObject.AddComponent<MeshRenderer>();

@@ -36,21 +36,31 @@ public class Grid
                 Tile tile = tiles[q, r];
 
                 SetNeighbor(tile, Directions.NE, q, r + 1);
-                SetNeighbor(tile, Directions.E, WrapX(q + 1), r);
-                SetNeighbor(tile, Directions.SE, WrapX(q + 1), r - 1);
+                SetNeighbor(tile, Directions.E, q + 1, r);//
+                //SetNeighbor(tile, Directions.E, WrapX(q + 1), r);
+                SetNeighbor(tile, Directions.SE, q + 1, r - 1);//
+                //SetNeighbor(tile, Directions.SE, WrapX(q + 1), r - 1);
                 SetNeighbor(tile, Directions.SW, q, r - 1);
-                SetNeighbor(tile, Directions.W, WrapX(q - 1), r);
-                SetNeighbor(tile, Directions.NW, WrapX(q - 1), r + 1);
+                SetNeighbor(tile, Directions.W, q - 1, r);//
+                //SetNeighbor(tile, Directions.W, WrapX(q - 1), r);
+                SetNeighbor(tile, Directions.NW, q - 1, r + 1);//
+                //SetNeighbor(tile, Directions.NW, WrapX(q - 1), r + 1);
+
+                //na czas testowania ścian
             }
         }
     }
     void SetNeighbor(Tile tile, Directions dir, int q, int r)
     {
+        if (q < 0 || q >= width)//
+            return;//
+
         if (r < 0 || r >= height)
             return;
 
         tile.neighbors[(int)dir] = tiles[q, r];
     }
+
     public void DebugNeighbors()
     {
         for (int q = 0; q < width; q++)

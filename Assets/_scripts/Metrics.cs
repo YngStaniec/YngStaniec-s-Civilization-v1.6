@@ -2,12 +2,13 @@ using UnityEngine;
 
 public static class Metrics
 {
-    public static readonly float radius = 1f;
-
+    public const float radius = 1f;
     public static readonly float hexWidth = Mathf.Sqrt(3f) * radius;
     public static readonly float hexHeight = 2f * radius;
 
     public static readonly float verticalSpacing = 1.5f * radius;
+    public static float worldWidth;
+
 
     public static readonly Vector3[] corners =
     {
@@ -25,5 +26,20 @@ public static class Metrics
 
         return new Vector3(x, 0f, z);
     }
+
+    public static readonly int[,] edgeVertices =
+    {
+        {1,2}, // NE
+        {0,1}, // E
+        {5,0}, // SE
+        {4,5}, // SW
+        {3,4}, // W
+        {2,3}  // NW
+    };
+    public static Vector3 GetCorner(int index)
+    {
+        return corners[index];
+    }
+
 
 }
