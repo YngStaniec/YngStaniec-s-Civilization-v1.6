@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class WorldRenderer : MonoBehaviour
 {
-    public Material material;
+    public Material terrainMaterial;
+    public Material cliffMaterial;
 
     public int width = 32;
     public int height = 32;
@@ -14,10 +15,18 @@ public class WorldRenderer : MonoBehaviour
     void Start()
     {
         grid = new Grid(width, height);
+        Metrics.worldWidth = width * Metrics.hexWidth;
 
         if (width % chunkSize != 0 || height % chunkSize != 0)
         {
             Debug.LogError("Grid size must be divisible by chunkSize!");
+        }
+        foreach (Tile tile in grid.tiles)
+        {
+
+            Vector3 pos = tile.worldPosition;
+
+            tile.worldPosition = pos;
         }
 
         CreateChunks();
@@ -27,6 +36,8 @@ public class WorldRenderer : MonoBehaviour
     {
         int chunkCountX = width / chunkSize;
         int chunkCountZ = height / chunkSize;
+        
+
 
         for (int cx = 0; cx < chunkCountX; cx++)
         {
@@ -43,13 +54,13 @@ public class WorldRenderer : MonoBehaviour
         chunkObject.transform.parent = transform;
         chunkObject.transform.localPosition = Vector3.zero;
 
-
         MeshFilter filter = chunkObject.AddComponent<MeshFilter>();
         MeshRenderer renderer = chunkObject.AddComponent<MeshRenderer>();
 
-        renderer.material = material;
-
         Chunk chunk = chunkObject.AddComponent<Chunk>();
+        
+        chunk.terrainMaterial = terrainMaterial;
+        chunk.cliffMaterial = cliffMaterial;
 
         Tile[,] chunkTiles = new Tile[chunkSize, chunkSize];
 
