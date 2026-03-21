@@ -8,20 +8,71 @@ public class Tile
 
     public float height;
     public Vector3 worldPosition;
+    public Biome biome;
+    public Color color;
 
     public Tile[] neighbors = new Tile[6];
 
-    public Tile(int q, int r)
+    public Tile(int q, int r, int mapWidth)
     {
         this.q = q;
         this.r = r;
+        
 
-        height = Random.Range(0f, 1f);
+        height = HeightGenerator.GetHeight(q, r, mapWidth);
+
+        biome = HeightGenerator.GetBiomeFromHeight(height);
+
+        color = HeightGenerator.GetBiomeColor(biome);
 
         Vector3 pos = Metrics.GetPosition(q, r);
         pos.y = height;
 
         worldPosition = pos;
+    }
+    public void ResolveBeach()
+    {
+        if (height > 0.05f && height <= 0.25f)
+        {
+            bool nearOcean = false;
+
+            foreach (var n in neighbors)
+            {
+                if (n != null && n.height == 0f)
+                {
+                    nearOcean = true;
+                    break;
+                }
+            }
+
+            // 1 hex od oceanu
+            if (nearOcean)
+            {
+                height = 0.15f;
+                biome = Biome.Plains;
+                color = HeightGenerator.GetBiomeColor(biome);
+            }
+            else
+            {
+                // 2 hexy od oceanu (rzadko)
+                foreach (var n in neighbors)
+                {
+                    if (n != null)
+                    {
+                        foreach (var nn in n.neighbors)
+                        {
+                            if (nn != null && nn.height == 0f && Random.value < 0.2f)
+                            {
+                                height = 0.15f;
+                                biome = Biome.Plains;
+                                color = HeightGenerator.GetBiomeColor(biome);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -10,6 +10,7 @@ public class Chunk : MonoBehaviour
     List<int> hexTriangles = new List<int>();
     List<int> wallTriangles = new List<int>();
     List<int> cliffTriangles = new List<int>();
+    List<Color> colors = new List<Color>();
 
     public Material terrainMaterial;
     public Material cliffMaterial;
@@ -39,6 +40,7 @@ public class Chunk : MonoBehaviour
         hexTriangles.Clear();
         wallTriangles.Clear();
         cliffTriangles.Clear();
+        colors.Clear();
 
         foreach (Tile tile in tiles)
         {
@@ -48,6 +50,7 @@ public class Chunk : MonoBehaviour
         mesh.Clear();
 
         mesh.vertices = vertices.ToArray();
+        mesh.colors = colors.ToArray();
 
         mesh.subMeshCount = 3;
 
@@ -69,7 +72,7 @@ public class Chunk : MonoBehaviour
             Vector3 v2 = center + Metrics.corners[i];
             Vector3 v3 = center + Metrics.corners[(i + 1) % 6];
 
-            AddTriangle(v1, v3, v2);
+            AddTriangle(v1, v3, v2, tile);
         }
 
         BuildWall(tile, Directions.NE);
@@ -77,13 +80,17 @@ public class Chunk : MonoBehaviour
         BuildWall(tile, Directions.SE);
     }
 
-    void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
+    void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Tile tile)
     {
         int index = vertices.Count;
 
         vertices.Add(v1);
         vertices.Add(v2);
         vertices.Add(v3);
+
+        colors.Add(tile.color);
+        colors.Add(tile.color);
+        colors.Add(tile.color);
 
         hexTriangles.Add(index);
         hexTriangles.Add(index + 1);
@@ -104,7 +111,7 @@ public class Chunk : MonoBehaviour
         b = GetEdgeVertex(tile, i2);
     }
 
-    void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool isCliff)
+    void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool isCliff, Color color)
     {
         int index = vertices.Count;
 
@@ -122,6 +129,11 @@ public class Chunk : MonoBehaviour
         target.Add(index);
         target.Add(index + 2);
         target.Add(index + 3);
+
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
     }
 
     void BuildWall(Tile tile, Directions dir)
@@ -135,8 +147,9 @@ public class Chunk : MonoBehaviour
             return;
 
         float diff = Mathf.Abs(tile.height - neighbor.height);
+        Tile higher = tile.height > neighbor.height ? tile : neighbor;
 
-        bool isCliff = diff >= 0.4f;
+        bool isCliff = diff >= 0.2f;
 
         Vector3 a1, a2;
         GetEdge(tile, dir, out a1, out a2);
@@ -162,6 +175,6 @@ public class Chunk : MonoBehaviour
             }
         }
 
-        AddQuad(a1, a2, b1, b2, isCliff);
+        AddQuad(a1, a2, b1, b2, isCliff, higher.color);
     }
 }

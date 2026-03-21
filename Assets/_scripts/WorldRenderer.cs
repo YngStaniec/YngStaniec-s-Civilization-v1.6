@@ -17,16 +17,12 @@ public class WorldRenderer : MonoBehaviour
         grid = new Grid(width, height);
         Metrics.worldWidth = width * Metrics.hexWidth;
 
-        if (width % chunkSize != 0 || height % chunkSize != 0)
-        {
-            Debug.LogError("Grid size must be divisible by chunkSize!");
-        }
+        HeightGenerator.ApplyLakes(grid.tiles, width, height);
+        //HeightGenerator.ApplyCliffs(grid.tiles, width, height);
+
         foreach (Tile tile in grid.tiles)
         {
-
-            Vector3 pos = tile.worldPosition;
-
-            tile.worldPosition = pos;
+            tile.worldPosition.y = float.IsNaN(tile.height) ? 0f : tile.height;
         }
 
         CreateChunks();

@@ -1,6 +1,6 @@
 public static class HeightLevels
 {
-    public static readonly float[] levels =
+    /*public static readonly float[] levels =
     {
         0.00f, //ocean lub morze
         0.15f, //przybrzeże - płytka woda przy lądzie
@@ -15,5 +15,16 @@ public static class HeightLevels
         0.60f, //  -> Wyżyny 
         0.65f, //  /
         0.70f  // /
-    };
+    };*/
+}
+public enum Biome
+{
+    Ocean,
+    Lake,
+    Coast,
+    Beach,
+    Plains,
+    Grass,
+    Hills,
+    Mountains
 }

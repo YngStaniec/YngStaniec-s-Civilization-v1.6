@@ -23,7 +23,7 @@ public class Grid
         {
             for (int r = 0; r < height; r++)
             {
-                tiles[q, r] = new Tile(q, r);
+                tiles[q,r] = new Tile(q,r,width);
             }
         }
     }
