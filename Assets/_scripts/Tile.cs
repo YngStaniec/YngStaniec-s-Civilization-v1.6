@@ -38,7 +38,7 @@ public class Tile
 
             foreach (var n in neighbors)
             {
-                if (n != null && n.height == 0f)
+                if (n != null && n.height < 0.01f)
                 {
                     nearOcean = true;
                     break;
@@ -49,7 +49,9 @@ public class Tile
             if (nearOcean)
             {
                 height = 0.15f;
-                biome = Biome.Plains;
+                worldPosition.y = height;
+
+                biome = Biome.Beach;
                 color = HeightGenerator.GetBiomeColor(biome);
             }
             else
@@ -57,17 +59,18 @@ public class Tile
                 // 2 hexy od oceanu (rzadko)
                 foreach (var n in neighbors)
                 {
-                    if (n != null)
+                    if (n == null) continue;
+
+                    foreach (var nn in n.neighbors)
                     {
-                        foreach (var nn in n.neighbors)
+                        if (nn != null && nn.height < 0.01f && Random.value < 0.2f)
                         {
-                            if (nn != null && nn.height == 0f && Random.value < 0.2f)
-                            {
-                                height = 0.15f;
-                                biome = Biome.Plains;
-                                color = HeightGenerator.GetBiomeColor(biome);
-                                return;
-                            }
+                            height = 0.15f;
+                            worldPosition.y = height;
+
+                            biome = Biome.Beach;
+                            color = HeightGenerator.GetBiomeColor(biome);
+                            return;
                         }
                     }
                 }

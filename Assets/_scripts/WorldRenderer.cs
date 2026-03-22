@@ -18,7 +18,6 @@ public class WorldRenderer : MonoBehaviour
         Metrics.worldWidth = width * Metrics.hexWidth;
 
         HeightGenerator.ApplyLakes(grid.tiles, width, height);
-        //HeightGenerator.ApplyCliffs(grid.tiles, width, height);
 
         foreach (Tile tile in grid.tiles)
         {

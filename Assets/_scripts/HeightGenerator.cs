@@ -100,7 +100,7 @@ public static class HeightGenerator
 
     public static Biome GetBiomeFromHeight(float height)
     {
-        if (height == 0f) return Biome.Ocean;
+        if (height < 0.01f) return Biome.Ocean;
         if (height < 0.2f) return Biome.Plains;
         if (height < 0.5f) return Biome.Grass;
         if (height < 0.8f) return Biome.Hills;
@@ -134,7 +134,7 @@ public static class HeightGenerator
             {
                 Tile t = tiles[q, r];
 
-                if (t.height == 0f) continue; // nie na oceanie
+                if (t.height < 0.01f) continue; // nie na oceanie
 
                 float lakeNoise = Mathf.PerlinNoise(q * lakeScale + 200, r * lakeScale + 200);
 
@@ -156,6 +156,7 @@ public static class HeightGenerator
                     {
                         float lakeHeight = avg / count - 0.05f;
                         t.height = Quantize(Mathf.Clamp01(lakeHeight));
+                        t.worldPosition.y = t.height;
                         t.biome = Biome.Lake;
                         t.color = GetBiomeColor(Biome.Lake);
                     }
@@ -163,38 +164,6 @@ public static class HeightGenerator
             }
         }
     }
-
-    // ========================
-    // KLIFY (TEGO JESZCZE NIE FINALIZUJEMY)
-    // ========================
-    /*public static void ApplyCliffs(Tile[,] tiles, int width, int height)
-    {
-        for (int q = 0; q < width; q++)
-        {
-            for (int r = 0; r < height; r++)
-            {
-                Tile t = tiles[q, r];
-                if (t.height == 0f) continue;
-
-                foreach (var n in t.neighbors)
-                {
-                    if (n == null) continue;
-
-                    float diff = t.height - n.height;
-
-                    if (diff > cliffThreshold)
-                    {
-                        float noise = Mathf.PerlinNoise(q * 0.2f + 300, r * 0.2f + 300);
-
-                        if (noise > 0.6f)
-                        {
-                            t.height = Quantize(n.height + cliffStrength);
-                        }
-                    }
-                }
-            }
-        }
-    }*/
 
     // ========================
     // HELPERY

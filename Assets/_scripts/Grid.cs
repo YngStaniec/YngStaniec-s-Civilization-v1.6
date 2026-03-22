@@ -14,6 +14,16 @@ public class Grid
 
         CreateTiles();
         AssignNeighbors();
+
+        HeightGenerator.ApplyLakes(tiles, width, height);
+
+        for (int q = 0; q < width; q++)
+        {
+            for (int r = 0; r < height; r++)
+            {
+                tiles[q, r].ResolveBeach();
+            }
+        }
     }
     void CreateTiles()
     {
@@ -48,6 +58,9 @@ public class Grid
     void SetNeighbor(Tile tile, Directions dir, int q, int r)
     {
         if (r < 0 || r >= height)
+            return;
+
+        if (q < 0 || q >= width)
             return;
 
         tile.neighbors[(int)dir] = tiles[q, r];
