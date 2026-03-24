@@ -9,6 +9,7 @@ public class Chunk : MonoBehaviour
 
     List<int> hexTriangles = new List<int>();
     List<int> wallTriangles = new List<int>();
+    List<int> lineTriangles = new List<int>();
     List<int> cliffTriangles = new List<int>();
     List<Color> colors = new List<Color>();
 
@@ -33,33 +34,47 @@ public class Chunk : MonoBehaviour
         {
             terrainMaterial, // hex top
             terrainMaterial, // zwykłe ściany
-            cliffMaterial    // klify
+            cliffMaterial,  // klify
+            terrainMaterial
         };
 
         vertices.Clear();
         hexTriangles.Clear();
         wallTriangles.Clear();
         cliffTriangles.Clear();
+        lineTriangles.Clear();
         colors.Clear();
 
         foreach (Tile tile in tiles)
         {
             TriangulateTile(tile);
+            HexEdgeLines.AddEdgeLines(tile, vertices, lineTriangles, colors);
+            //HexEdgeLines.CollectVertexHeights(tile);
         }
+        //HexEdgeLines.BuildVerticalLines(vertices, lineTriangles, colors);
 
         mesh.Clear();
 
         mesh.vertices = vertices.ToArray();
         mesh.colors = colors.ToArray();
 
-        mesh.subMeshCount = 3;
+        mesh.subMeshCount = 4;
 
         mesh.SetTriangles(hexTriangles, 0);
         mesh.SetTriangles(wallTriangles, 1);
         mesh.SetTriangles(cliffTriangles, 2);
+        mesh.SetTriangles(lineTriangles, 3);
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+
+
+        MeshCollider collider = GetComponent<MeshCollider>();
+
+        if (collider == null)
+            collider = gameObject.AddComponent<MeshCollider>();
+
+        collider.sharedMesh = mesh;
     }
 
     void TriangulateTile(Tile tile)
@@ -143,7 +158,7 @@ public class Chunk : MonoBehaviour
         if (neighbor == null)
             return;
 
-        if (tile.height == neighbor.height)
+        if (Mathf.Abs(tile.height - neighbor.height) < 0.001f)
             return;
 
         float diff = Mathf.Abs(tile.height - neighbor.height);

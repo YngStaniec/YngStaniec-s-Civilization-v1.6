@@ -19,8 +19,6 @@ public class Tile
         this.r = r;
         
 
-        height = HeightGenerator.GetHeight(q, r, mapWidth);
-
         biome = HeightGenerator.GetBiomeFromHeight(height);
 
         color = HeightGenerator.GetBiomeColor(biome);

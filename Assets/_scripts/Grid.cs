@@ -15,7 +15,7 @@ public class Grid
         CreateTiles();
         AssignNeighbors();
 
-        HeightGenerator.ApplyLakes(tiles, width, height);
+        //HeightGenerator.ApplyLakes(tiles, width, height);
 
         for (int q = 0; q < width; q++)
         {

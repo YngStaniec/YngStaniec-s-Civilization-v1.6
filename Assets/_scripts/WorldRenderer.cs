@@ -14,14 +14,18 @@ public class WorldRenderer : MonoBehaviour
 
     void Start()
     {
+        HeightGenerator.SetSeed(Random.Range(0, 10000)); // albo Random.Range
+
         grid = new Grid(width, height);
         Metrics.worldWidth = width * Metrics.hexWidth;
 
-        HeightGenerator.ApplyLakes(grid.tiles, width, height);
-
         foreach (Tile tile in grid.tiles)
         {
-            tile.worldPosition.y = float.IsNaN(tile.height) ? 0f : tile.height;
+            tile.height = HeightGenerator.GetHeight(tile.q, tile.r, width);
+            tile.worldPosition.y = tile.height;
+
+            tile.biome = HeightGenerator.GetBiomeFromHeight(tile.height);
+            tile.color = HeightGenerator.GetBiomeColor(tile.biome);
         }
 
         CreateChunks();

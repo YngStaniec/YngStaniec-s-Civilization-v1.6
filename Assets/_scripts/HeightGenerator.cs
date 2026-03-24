@@ -1,13 +1,10 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public static class HeightGenerator
 {
     // ========================
     // PARAMETRY
     // ========================
-
-    // 1. Base noise (kształt terenu)
-    static float baseScale = 0.15f;
     
     // 2. Ocean noise
     static float oceanScale = 0.06f;
@@ -20,11 +17,6 @@ public static class HeightGenerator
     // 4. Mountain noise
     static float mountainScale = 0.1f;
     static float mountainThreshold = 0.75f;
-
-    // 5. Cliff noise
-    static float cliffStrength = 0.4f;
-    static float cliffThreshold = 0.15f;
-
 
     // ========================
     // PUBLIC API
@@ -174,5 +166,102 @@ public static class HeightGenerator
         h = Mathf.Clamp01(h);
         h = Mathf.Round(h / 0.05f) * 0.05f;
         return Mathf.Round(h * 100f) / 100f;
+    }
+}*/
+using UnityEngine;
+
+public static class HeightGenerator
+{
+    static float baseScale = 0.05f;
+
+    static int octaves = 4;
+    static float persistence = 0.5f;
+    static float lacunarity = 2f;
+
+    static float heightMultiplier = 1f;
+    static float step = 0.05f;
+
+    static int seed = 12345;
+
+    static float offsetX;
+    static float offsetY;
+
+    public static float GetHeight(int q, int r, int mapWidth)
+    {
+        float worldX = Metrics.hexWidth * (q + r * 0.5f);
+        float worldZ = Metrics.verticalSpacing * r;
+
+        float t = worldX / Metrics.worldWidth;
+
+        float amplitude = 1f;
+        float frequency = 1f;
+        float noiseHeight = 0f;
+
+        for (int i = 0; i < octaves; i++)
+        {
+            float sampleZ = (worldZ + offsetY) * baseScale * frequency;
+
+            float sampleX1 = (worldX + offsetX) * baseScale * frequency;
+
+            float sampleX2 = (worldX - Metrics.worldWidth + offsetX) * baseScale * frequency;
+
+            float noise1 = Mathf.PerlinNoise(sampleX1, sampleZ);
+            float noise2 = Mathf.PerlinNoise(sampleX2, sampleZ);
+
+            float blend = t * t * (3f - 2f * t);
+
+            float perlin = noise1 * (1f - blend) + noise2 * blend;
+
+            perlin = perlin * 2f - 1f;
+
+            noiseHeight += perlin * amplitude;
+
+            amplitude *= persistence;
+            frequency *= lacunarity;
+        }
+
+        noiseHeight = (noiseHeight + 1f) * 0.5f;
+
+        if (step > 0f)
+        {
+            noiseHeight = Mathf.Round(noiseHeight / step) * step;
+        }
+
+        return noiseHeight * heightMultiplier;
+    }
+
+    public static void SetSeed(int newSeed)
+    {
+        seed = newSeed;
+
+        System.Random prng = new System.Random(seed);
+
+        offsetX = prng.Next(-100000, 100000);
+        offsetY = prng.Next(-100000, 100000);
+    }
+
+    public static Biome GetBiomeFromHeight(float height)
+    {
+        if (height < 0.01f) return Biome.Ocean;
+        if (height < 0.2f) return Biome.Plains;
+        if (height < 0.5f) return Biome.Grass;
+        if (height < 0.8f) return Biome.Hills;
+        return Biome.Mountains;
+    }
+    
+    public static Color GetBiomeColor(Biome biome)
+    {
+        switch (biome)
+        {
+            case Biome.Ocean: return new Color(0.1f, 0.3f, 0.8f);
+            case Biome.Plains: return new Color(0.56f, 0.93f, 0.56f);
+            case Biome.Beach: return new Color(0.9f, 0.85f, 0.6f);
+            case Biome.Grass: return new Color(0.2f, 0.7f, 0.2f);
+            case Biome.Hills: return new Color(0.4f, 0.6f, 0.2f);
+            case Biome.Mountains: return Color.gray;
+            case Biome.Lake: return new Color(0.05f, 0.1f, 0.3f);
+        }
+
+        return Color.magenta;
     }
 }

@@ -19,6 +19,10 @@ public static class Metrics
         new Vector3(Mathf.Cos(Mathf.Deg2Rad * 210), 0, Mathf.Sin(Mathf.Deg2Rad * 210)) * radius,
         new Vector3(Mathf.Cos(Mathf.Deg2Rad * 270), 0, Mathf.Sin(Mathf.Deg2Rad * 270)) * radius
     };
+    public static Vector3 GetCorner(Vector3 center, int i)
+    {
+        return center + corners[i];
+    }
     public static Vector3 GetPosition(int q, int r)
     {
         float x = hexWidth * (q + r * 0.5f);
