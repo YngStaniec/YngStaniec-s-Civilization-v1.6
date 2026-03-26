@@ -17,16 +17,17 @@ public class Tile
     {
         this.q = q;
         this.r = r;
-        
-
-        biome = HeightGenerator.GetBiomeFromHeight(height);
-
-        color = HeightGenerator.GetBiomeColor(biome);
 
         Vector3 pos = Metrics.GetPosition(q, r);
         pos.y = height;
 
         worldPosition = pos;
+    }
+    public void SetHeight(float height)
+    {
+        this.height = height;
+        biome = HeightGenerator.GetBiomeFromHeight(height);
+        color = HeightGenerator.GetBiomeColor(biome);
     }
     public void ResolveBeach()
     {
@@ -36,7 +37,9 @@ public class Tile
 
             foreach (var n in neighbors)
             {
-                if (n != null && n.height < 0.01f)
+                if (n == null) continue;
+
+                if (n.height < 0.01f)
                 {
                     nearOcean = true;
                     break;

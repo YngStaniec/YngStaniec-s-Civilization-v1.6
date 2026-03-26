@@ -21,11 +21,16 @@ public class WorldRenderer : MonoBehaviour
 
         foreach (Tile tile in grid.tiles)
         {
-            tile.height = HeightGenerator.GetHeight(tile.q, tile.r, width);
+            float h = HeightGenerator.GetHeight(tile.q, tile.r, width);
+            tile.SetHeight(h);
             tile.worldPosition.y = tile.height;
 
             tile.biome = HeightGenerator.GetBiomeFromHeight(tile.height);
             tile.color = HeightGenerator.GetBiomeColor(tile.biome);
+        }
+        foreach (Tile tile in grid.tiles)
+        {
+            tile.ResolveBeach();
         }
 
         CreateChunks();
